@@ -1,6 +1,6 @@
 <template>
   <div>
-    <van-nav-bar title="登录" left-arrow>
+    <van-nav-bar title="登录" left-arrow @click-left="$router.back()">
       <!-- <van-icon name="cross" slot="left" /> -->
       <template v-slot:left>
         <van-icon name="cross" />
@@ -16,7 +16,7 @@
           { pattern: /^(?:(?:\+|00)86)?1\d{10}$/, message: '不符合手机号规则' },
         ]"
       >
-        <template #left-icon> <i class="toutiao toutiao-shouji"></i> </template
+        <template #left-icon> <MyIcon name="shouji"></MyIcon> </template
       ></van-field>
       <van-field
         v-model.trim="code"
@@ -62,7 +62,7 @@ export default {
   created () { },
   data () {
     return {
-      mobile: '13911111111', // 手机号
+      mobile: '13911111221', // 手机号
       code: '246810', // 短信验证码
       time: 5 * 1000,
       isCountDownShow: false
@@ -76,6 +76,7 @@ export default {
         console.log(res)
 
         this.$store.commit('setUser', res.data.data)
+        this.$router.push({ name: 'my' })
       } catch (err) {
         console.log(err)
       }

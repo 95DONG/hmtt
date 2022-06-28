@@ -7,9 +7,13 @@ import Vant from 'vant'
 // 引入全部样式
 import 'vant/lib/index.less'
 import 'amfe-flexible'
-import '@/styles/icon.less'
-Vue.config.productionTip = false
+import MyIcon from '@/components/MyIcon.vue'
+// import '@/styles/icon.less'
+// import '@/styles/reset.less'
+import '@/styles/index.less'
 
+Vue.config.productionTip = false
+Vue.component('MyIcon', MyIcon)
 Vue.use(Vant)
 new Vue({
   router,
