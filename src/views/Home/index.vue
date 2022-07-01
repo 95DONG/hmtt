@@ -43,11 +43,13 @@
 import ChannelPanel from './components/ChannelPanel.vue'
 import ArticleList from '@/components/ArticleList.vue'
 import { getMyChannels } from '@/api/home'
+import { getItem } from '@/utils/storage'
+const CHANNELS = 'CHANNELS'
 export default {
 
   name: 'Home',
   created () {
-    this.getMyChannels()
+    this.getMyChannels()// 调用
   },
   data () {
     return {
@@ -57,19 +59,32 @@ export default {
     }
   },
   methods: {
+    // 获取频道数据
+    // 三种情况
+    // 1. 没有登录 第一次安装 第一次打开，只能去ajax中去拿
+    // 2. 没有登录过，但是是第二次打开，有可能编辑过，删除过，这样就是从本地去拿
+    // 3. 登录过，直接从ajax中拿
+    // 编辑，删除的时候 持久化数据： 1. 没有登录 把数据放本地存储 2.登录过 用ajax
     async getMyChannels () {
-      try {
-        const res = await getMyChannels()
-        console.log('res', res)
-        this.channels = res.data.data.channels
-        console.log(this.channels)
-      } catch (error) {
-        console.log(error)
+      const channels = getItem(CHANNELS)
+      // ：!(this.$store.state.user && this.$store.state.user.token) && channels 匹配
+      // 匹配的是未登录并且本地存储中没有频道数据的情况
+      if (!(this.$store.state.user && this.$store.state.user.token) && channels) {
+        this.channels = channels
+      } else {
+        try {
+          const res = await getMyChannels()
+          console.log('res', res)
+          this.channels = res.data.data.channels
+          console.log(this.channels)
+        } catch (error) {
+          console.log(error)
+        }
       }
     }
   },
   computed: {},
-  watch: {},
+
   filters: {},
   components: { ArticleList, ChannelPanel }
 }
@@ -121,7 +136,7 @@ export default {
   z-index: 1;
   border-bottom: 1px solid #edeff3;
 }
-/deep/ .van-pull-refresh{
+/deep/ .van-pull-refresh {
   height: calc(100vh - 274px);
   overflow: auto;
 }

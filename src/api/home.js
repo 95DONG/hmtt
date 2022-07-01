@@ -23,8 +23,27 @@ export const getArticleList = ({ channel_id, timestamp }) => {
   })
 }
 
+/**
+ *获取所有数据
+ * @returns
+ */
 export const getAllArticleList = () => {
   return request({
     url: 'channels'
+  })
+}
+
+/**
+ *频道数据持久化
+ * @param {*} channels
+ * @returns
+ */
+export const saveChannels = (channels) => {
+  return request({
+    url: 'user/channels',
+    method: 'PUT',
+    data: {
+      channels
+    }
   })
 }

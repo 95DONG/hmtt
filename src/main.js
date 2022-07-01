@@ -11,6 +11,11 @@ import MyIcon from '@/components/MyIcon.vue'
 // import '@/styles/icon.less'
 // import '@/styles/reset.less'
 import '@/styles/index.less'
+import * as obj from '@/filters/index'// 一次性把filters/index 里面的所有按需导出全部导出放到obj中作为属性
+// Object.keys(obj) 把对象中的属性名提取出来并存放到数组中
+Object.keys(obj).forEach(key => {
+  Vue.filter(key, obj[key])
+})
 Vue.config.productionTip = false
 Vue.component('MyIcon', MyIcon)
 Vue.use(Vant)
@@ -26,7 +31,7 @@ setTimeout(() => {
   const list = document.querySelectorAll('*')
   list.forEach(item => {
     item.onscroll = function (e) {
-      console.log(e.target)
+      // console.log(e.target)
     }
   })
 }, 1000)

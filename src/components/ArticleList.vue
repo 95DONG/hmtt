@@ -1,19 +1,28 @@
 <template>
   <van-cell-group>
-    <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
+    <van-pull-refresh
+      ref="pullrefresh"
+      v-model="refreshing"
+      @refresh="onRefresh"
+    >
       <van-list
         v-model="loading"
         :finished="finished"
         finished-text="没有更多了"
         @load="onLoad"
       >
-        <van-cell
+        <!-- <van-cell
           :title="item.title"
           value="内容"
           label="描述信息"
           v-for="(item, index) in articleList"
           :key="index"
-        />
+        /> -->
+        <ArticleItem
+          v-for="(item, index) in articleList"
+          :key="index"
+          :article="item"
+        ></ArticleItem>
       </van-list>
     </van-pull-refresh>
   </van-cell-group>
@@ -21,6 +30,9 @@
 
 <script>
 import { getArticleList } from '@/api/home'
+import ArticleItem from './ArticleItem.vue'
+let ele = null
+let scrollTop = 0
 export default {
   name: 'ArticleList',
   props: {
@@ -31,6 +43,19 @@ export default {
   },
   created () {
     this.getArticleList()
+  },
+  mounted () {
+    ele = this.$refs.pullrefresh.$el
+    // 组件最终渲染成html dom ， $el 就是渲染好的根标签
+    // console.log(this.$refs.pullrefresh)
+    // console.log(this)
+    this.$refs.pullrefresh.$el.addEventListener('scroll', function () {
+      // console.log(this.scrollTop)
+      scrollTop = this.scrollTop
+    })
+  },
+  activated () {
+    ele.scrollTop = scrollTop
   },
   data () {
     return {
@@ -55,7 +80,7 @@ export default {
         if (this.timestamp === null) {
           this.finished = true
         }
-        console.log('resa', res)
+        // console.log('resa', res)
         this.articleList.push(...res.data.data.results)
         // 数据更新完毕后，讲loading设置为 false
         this.loading = false
@@ -79,7 +104,7 @@ export default {
   computed: {},
   watch: {},
   filters: {},
-  components: {}
+  components: { ArticleItem }
 }
 </script>
 

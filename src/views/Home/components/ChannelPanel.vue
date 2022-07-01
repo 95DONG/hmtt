@@ -41,8 +41,11 @@
 </template>
 
 <script>
-import { getAllArticleList } from '@/api/home'
+import { getAllArticleList, saveChannels } from '@/api/home'
+import { setItem } from '@/utils/storage' // 定义常量，好处是写错的情况code能识别，直接使用字符串不易识别
 // const _ = require('lodash')
+// import _ from 'lodash'
+const CHANNELS = 'CHANNELS'// 导入设置本地存储模块中的设置模块
 export default {
   props: {
     channels: {
@@ -83,6 +86,7 @@ export default {
     Onclick (index) {
       if (this.isCloseShow) {
         // 删除
+        if (index === 0) return
         const obj = this.channels[index]
         this.channels.splice(index, 1)
         this.recommendChannels.push(obj)
@@ -96,7 +100,32 @@ export default {
     }
   },
   computed: {},
-  watch: {},
+  watch: {
+    channels: {
+      // 登录过，就把本地持久化放在后台服务器（用ajax） 未登录就放本地存储
+      async handler (newVal) {
+        console.log(123)
+        if (this.$store.state.user && this.$store.state.user.token) { // 登录过的
+          const arr = []
+          newVal.forEach((item, index) => {
+            arr.push({ id: item.id, seq: index })
+          })
+          console.log('arr', arr)
+          // 先把数据处理一下
+          try {
+            const res = await saveChannels(arr)
+            console.log(res)
+          } catch (error) {
+            console.log(error)
+          }
+        } else { // 没有登录
+          setItem(CHANNELS, newVal)
+        }
+      },
+      deep: true
+
+    }
+  },
   filters: {},
   components: {}
 }
